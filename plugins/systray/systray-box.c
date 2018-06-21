@@ -36,7 +36,7 @@
 #include "systray-box.h"
 #include "systray-socket.h"
 
-#define SPACING    (2)
+#define SPACING    (9)
 #define OFFSCREEN  (-9999)
 
 /* some icon implementations request a 1x1 size for invisible icons */
