@@ -1,0 +1,74 @@
+Description: Fix spelling errors in binary files
+Author: Mateusz Łukasik <mati75@linuxmint.pl>
+Last-Update: 2016-10-25
+
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -13274,7 +13274,7 @@ Date:   Fri Nov 26 23:24:13 2010 +0100
+ 
+     Improve session management signals a bit.
+     
+-    We now save on the save-state signal if emitted, not when quiting
++    We now save on the save-state signal if emitted, not when quitting
+     the main loop during session quit.
+ 
+ commit 1caf1aaa65f8f0c057ab50544550097eeea201f9
+@@ -15062,7 +15062,7 @@ Date:   Sun Jun 13 14:08:41 2010 +0200
+     Add logout to plugin menu and drop quit and restart.
+     
+     In 4.6 the quit action also showed the logout dialog, instead of
+-    quiting the panel. Also drop the restart option since it is not
++    quitting the panel. Also drop the restart option since it is not
+     suitable for normal users (xfce4-panel -r still exists).
+     This makes it harder to accidentally remove the panel from the
+     session, if you want that, run xfce4-panel -q (normal quit).
+--- a/common/panel-utils.c
++++ b/common/panel-utils.c
+@@ -97,7 +97,7 @@ panel_utils_builder_new (XfcePanelPlugin
+         }
+     }
+ 
+-  g_critical ("Faild to construct the builder for plugin %s-%d: %s.",
++  g_critical ("Failed to construct the builder for plugin %s-%d: %s.",
+               xfce_panel_plugin_get_name (panel_plugin),
+               xfce_panel_plugin_get_unique_id (panel_plugin),
+               error->message);
+--- a/libxfce4panel/xfce-panel-macros-46.h
++++ b/libxfce4panel/xfce-panel-macros-46.h
+@@ -272,11 +272,11 @@ G_BEGIN_DECLS
+   static void \
+   _xpp_quit_main_loop (void) \
+   { \
+-     static gboolean quiting = FALSE; \
++     static gboolean quitting = FALSE; \
+      \
+-     if (!quiting) \
++     if (!quitting) \
+        { \
+-         quiting = TRUE; \
++         quitting = TRUE; \
+          gtk_main_quit (); \
+        } \
+   } \
+--- a/panel/panel-plugin-external.c
++++ b/panel/panel-plugin-external.c
+@@ -368,7 +368,7 @@ panel_plugin_external_unrealize (GtkWidg
+     }
+ 
+   panel_debug (PANEL_DEBUG_EXTERNAL,
+-               "%s-%d: plugin unrealized; quiting child",
++               "%s-%d: plugin unrealized; quitting child",
+                panel_module_get_name (external->module),
+                external->unique_id);
+ 
+--- a/plugins/tasklist/tasklist-widget.c
++++ b/plugins/tasklist/tasklist-widget.c
+@@ -502,7 +502,7 @@ xfce_tasklist_class_init (XfceTasklistCl
+   gtk_widget_class_install_style_property (gtkwidget_class,
+                                            g_param_spec_int ("min-button-length",
+                                                              NULL,
+-                                                             "The minumum length of a window button",
++                                                             "The minimum length of a window button",
+                                                              1, G_MAXINT,
+                                                              DEFAULT_MIN_BUTTON_LENGTH,
+                                                              EXO_PARAM_READABLE));

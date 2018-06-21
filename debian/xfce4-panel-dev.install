@@ -1,0 +1,4 @@
+usr/include/xfce4/libxfce4panel-1.0
+usr/lib/*/pkgconfig/libxfce4panel-1.0.pc
+usr/lib/*/libxfce4panel-1.0.so
+usr/share/gtk-doc/html/libxfce4panel-1.0

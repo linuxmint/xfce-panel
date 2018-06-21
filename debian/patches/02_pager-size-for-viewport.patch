@@ -1,0 +1,25 @@
+Description: Fix workspace miniature size calculation wrong for viewport mode
+Author: Bin Guo <gb2312@rcn.com>
+Debian-Bug: https://bugs.debian.org/785582
+
+--- a/plugins/pager/pager.c
++++ b/plugins/pager/pager.c
+@@ -593,6 +593,18 @@ pager_plugin_size_request (GtkWidget
+     {
+       mode   = xfce_panel_plugin_get_mode (XFCE_PANEL_PLUGIN (plugin));
+       n_workspaces = wnck_screen_get_workspace_count (plugin->wnck_screen);
++      if (n_workspaces == 1)
++        {
++           WnckWorkspace *active_ws;
++           /* check if we ware in viewport mode */
++           active_ws = wnck_screen_get_active_workspace (plugin->wnck_screen);
++           if (wnck_workspace_is_virtual (active_ws))
++             {
++               /* number of rows * number of columns */
++               n_workspaces = (wnck_workspace_get_width (active_ws) / wnck_screen_get_width (plugin->wnck_screen))
++                               * (wnck_workspace_get_height (active_ws) / wnck_screen_get_height (plugin->wnck_screen));
++             }
++        }
+       n_cols = MAX (1, (n_workspaces + plugin->rows - 1) / plugin->rows);
+       if (mode == XFCE_PANEL_PLUGIN_MODE_HORIZONTAL)
+         {

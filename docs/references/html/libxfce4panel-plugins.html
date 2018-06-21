@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Part II. Panel Plugins: Libxfce4panel Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="Libxfce4panel Reference Manual">
+<link rel="up" href="index.html" title="Libxfce4panel Reference Manual">
+<link rel="prev" href="libxfce4panel-Commonly-used-plugin-macros.html" title="Commonly used plugin macros">
+<link rel="next" href="XfcePanelPlugin.html" title="XfcePanelPlugin">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><img src="up-insensitive.png" width="16" height="16" border="0"></td>
+<td><a accesskey="p" href="libxfce4panel-Commonly-used-plugin-macros.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="XfcePanelPlugin.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="part">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="libxfce4panel-plugins"></a>Part II. Panel Plugins</h1></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl class="toc">
+<dt>
+<span class="refentrytitle"><a href="XfcePanelPlugin.html">XfcePanelPlugin</a></span><span class="refpurpose"> — Interface for panel plugins</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="libxfce4panel-Panel-Plugin-Register-Macros.html">Panel Plugin Register Macros</a></span><span class="refpurpose"> — Register panel plugins that are compiled as modules.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="libxfce4panel-Panel-Plugin-Register-Macros-(4.6-Style).html">Panel Plugin Register Macros (4.6 Style)</a></span><span class="refpurpose"> — The 4.6 way of registering plugins that compiled as executables</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="libxfce4panel-GObject-Oriented-Panel-Plugin-Registers-Macros.html">GObject Oriented Panel Plugin Registers Macros</a></span><span class="refpurpose"> — Macros to register panel plugins, written as GObjects.</span>
+</dt>
+</dl>
+</div>
+<div class="sect1">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="libxfce4panel-register"></a>Register plugins with the panel</h2></div></div></div>
+<p>Since 4.8 there are various ways to register a plugin with the panel. Which option you
+      choose depends on a couple of things: is the plugin compiled as a module or as an
+      executable and do you want to write a plugin as a GObject.</p>
+<div class="sect2">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id-1.3.2.3"></a>Internal or external</h3></div></div></div>
+<p>In 4.6 you had to choose to compile a plugin as an executable to run it external (with
+        the appropriate macro to register external plugins) and the same for internal plugins that
+        were compiled a modules. This worked quite good, but had a couple of disadvantages:</p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem"><p>To switch between internal and external you needed to change the build system and
+            registration macros, so this was not very flexible.</p></li>
+<li class="listitem"><p>When changes were made in the registration macros (esp the ones for external plugins)
+            a plugin had to recompile. Also each plugin copied the same piece of code.</p></li>
+<li class="listitem"><p>Improvements in the panel communication (D-Bus) and transparant backgrounds where
+            either avoided or hard to implement.</p></li>
+</ul></div>
+<p>To work around those disadvantages Xfce Panel 4.8 introduced a new way to run plugins
+        that are compiled as modules in a separate process: a plugin wrapper. The plugin wrapper is started
+        by the panel for each external plugin and embeds the plugin module. It provides the communication
+        between the panel and the module using D-Bus and still has the big advantage of the 'old' exectuable
+        external plugin: if it crashes it won't crash the panel.</p>
+<p>Whether a plugin is started internal or external is defined by the boolean in the
+        <code class="varname">X-XFCE-Internal</code> key in the plugins desktop file. No need to change the macros
+        and the registration macro code can be kept to an absolute minimum.</p>
+<p>This does not mean the 4.6 executable plugins are no supported anymore. However if you write
+        a new plugin or you plugin depends on libxfce4panel 4.8, it is recommended to switch to the new
+        registration functions and compile your plugin as a module. To make this move obvious the old
+        macros are all marked as deprecated in this API reference.</p>
+</div>
+<div class="sect2">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id-1.3.2.4"></a>GObject plugins</h3></div></div></div>
+<p>To handle the difference in 4.6 between internal and external plugins, the plugin API contained
+        3 different types. There were two objects <span class="structname">XfceInternalPanelPlugin</span> and
+        <span class="structname">XfceExternalPanelPlugin</span> based on a different parents (resp.
+        <span class="structname">GtkEventBox</span> and <span class="structname">GtkPlug</span>) that both implemented the
+        <span class="structname">XfcePanelPlugin</span> interface.</p>
+<p>Because internal and external is handled by the wrapper in 4.8, <span class="structname">XfcePanelPlugin</span>
+        is now a single object with <span class="structname">GtkEventBox</span> as parent. Apart from the fact that
+        this reduced a lot of code in libxfce4panel, it also has the advantage that it is easier to write
+        plugins as GObject with <code class="varname">XFCE_TYPE_PANEL_PLUGIN</code> as parent type. This brings a couple
+        of new advantages compared to plugins with register functions:</p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>You can easily cast you plugin to an <span class="structname">XfcePanelPlugin</span>, so
+            no need for custom structures. You also get all the GOBject features like type checking.</p></li></ul></div>
+<p>Downside is that you have to register all other types you create inside you plugin and that it
+        could be a bit difficult (when running internal) with special libraries. To work around the latter
+        you can make you plugin resident.</p>
+<p>All the plugins shipped with the panel are written as GObjects, so you can find enough examples
+        in the <code class="filename">plugins/</code> folder.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>
