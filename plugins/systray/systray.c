@@ -21,6 +21,10 @@
 #include <config.h>
 #endif
 
+#include <gdk/gdk.h>
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
+
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4ui/libxfce4ui.h>
 #include <common/panel-private.h>
@@ -155,8 +159,6 @@ static const gchar *known_applications[][3] =
   { "wicd-client.py", "wicd-gtk", "Wicd" },
   { "xfce4-power-manager", "xfpm-ac-adapter", "Xfce Power Manager" },
 };
-
-
 
 static void
 systray_plugin_class_init (SystrayPluginClass *klass)
@@ -503,6 +505,11 @@ static void
 systray_plugin_orientation_changed (XfcePanelPlugin *panel_plugin,
                                     GtkOrientation   orientation)
 {
+  GdkColor fg;
+  GdkColor error;
+  GdkColor warning;
+  GdkColor success;
+
   SystrayPlugin *plugin = XFCE_SYSTRAY_PLUGIN (panel_plugin);
 
   xfce_hvbox_set_orientation (XFCE_HVBOX (plugin->hvbox), orientation);
@@ -511,12 +518,25 @@ systray_plugin_orientation_changed (XfcePanelPlugin *panel_plugin,
   if (G_LIKELY (plugin->manager != NULL))
     systray_manager_set_orientation (plugin->manager, orientation);
 
+  if (G_LIKELY (plugin->manager != NULL)) {
+
+    fg = GTK_WIDGET (plugin->box)->style->fg[GTK_STATE_NORMAL];
+    error = GTK_WIDGET (plugin->box)->style->fg[GTK_STATE_NORMAL];
+    warning = GTK_WIDGET (plugin->box)->style->fg[GTK_STATE_NORMAL];
+    success = GTK_WIDGET (plugin->box)->style->fg[GTK_STATE_NORMAL];
+
+    systray_manager_set_colors (plugin->manager, &fg, &error, &warning, &success);
+  }
+
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     gtk_widget_set_size_request (plugin->button, BUTTON_SIZE, -1);
   else
     gtk_widget_set_size_request (plugin->button, -1, BUTTON_SIZE);
 
   systray_plugin_button_set_arrow (plugin);
+
+
+
 }
 
 
